@@ -1,0 +1,100 @@
+@startuml
+
+entity "Books" {
+  _id : ObjectId
+  title : String
+  summary : String
+  image : String
+  rating : Number
+  + adaptation { adapt : Boolean, id_name : ObjectId (ref Movies) }
+  --
+  * author : ObjectId [0..*] (ref Authors)
+  * reviews : ObjectId [0..*] (ref Reviews)
+  * types : ObjectId [0..*] (ref Types)
+}
+
+entity "Authors" {
+  _id : ObjectId
+  author : String
+  image : String
+  --
+  * books : ObjectId [0..*] (ref Books)
+}
+
+entity "Movies" {
+  _id : ObjectId
+  title : String
+  synopsis : String
+  image : String
+  rating : Number
+  director: ObjectId (ref Directors)
+  + adaptation { adapt : Boolean, idBook : ObjectId (ref Books) }
+  --
+  * reviews : ObjectId [0..*] (ref Reviews)
+  * actors : ObjectId [0..*] (ref Actors)
+  * types : ObjectId [0..*] (ref Types)
+}
+
+entity "Actors" {
+  _id : ObjectId
+  name : String
+  surname : String
+  image : String
+  --
+  * movies : ObjectId [0..*] (ref Movies)
+}
+
+entity "Directors" {
+  _id : ObjectId
+  director : String
+  image : String
+  --
+  * movies : ObjectId [0..*] (ref Movies)
+}
+
+entity "Reviews" {
+  _id : ObjectId
+  message : String
+  + date { day, month, year, hour, minute, second }
+  --
+  * user : ObjectId (ref Users)
+  * movie : ObjectId (ref Movies)
+  * book : ObjectId (ref Books)
+}
+
+entity "Types" {
+  _id : ObjectId
+  type : String
+}
+
+entity "Ratings" {
+  _id : ObjectId
+  value : Number
+  --
+  * user : ObjectId (ref Users)
+  * movie : ObjectId (ref Movies)
+  * book : ObjectId (ref Books)
+}
+
+entity "Users" {
+  _id : ObjectId
+  username : String
+  email : String
+  password : String
+  --
+  * userReviews : ObjectId [0..*] (ref Reviews)
+  * notes : ObjectId [0..*] (ref Ratings)
+}
+
+"Books" *--o "Authors" : has > 
+"Books" o--o "Reviews" : has >
+"Books" o-- "Types" : has >
+"Books" o--o "Movies" : is adapted true 
+"Movies" o--o "Actors" : has >
+"Movies" o--o "Directors" : has >
+"Movies" o--o "Reviews" : has >
+"Movies" o-- "Types" : has >
+"Users" o--o "Reviews" : writes >
+"Users" o--o "Ratings" : gives >
+
+@enduml
