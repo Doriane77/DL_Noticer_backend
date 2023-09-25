@@ -5,10 +5,13 @@ const express = require("express");
 const cors = require("cors");
 
 connectDB();
-
+const corsOptions = {
+  origin: ["http://127.0.0.1:3000", "http://localhost:3000"],
+  optionsSuccessStatus: 204,
+};
 app = express();
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 const userRoutes = require("./Routes/UserR");
