@@ -107,8 +107,12 @@ const one = async (req, res) => {
 const search = async (req, res) => {
   try {
     const query = req.query.name;
-    const actors = await Actor.find({ name: new RegExp(query, "i") });
-
+    const actors = await Actor.find({
+      $or: [
+        { name: new RegExp(query, "i") },
+        { surname: new RegExp(query, "i") },
+      ],
+    });
     res.status(200).json(actors);
   } catch (error) {
     res.status(500).json({ message: error.message });
