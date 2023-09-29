@@ -21,7 +21,7 @@ const register = async (req, res) => {
         return res.status(404).json({ message: "Movie not found" });
       }
 
-      movieToUpdate.reviews.push(review._id); // Adding the new review's ID to the movie's reviews array
+      movieToUpdate.reviews.push(review._id);
       await movieToUpdate.save();
     }
     if (book) {
