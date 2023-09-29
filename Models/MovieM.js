@@ -10,7 +10,11 @@ const moviesSchema = new mongoose.Schema({
   types: [{ type: mongoose.Schema.Types.ObjectId, ref: "Types" }],
   adaptation: {
     adapt: { type: Boolean, default: false },
-    idBook: { type: mongoose.Schema.Types.ObjectId, ref: "Books" },
+    idBook: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Books",
+      default: null,
+    },
   },
   actors: [{ type: mongoose.Schema.Types.ObjectId, ref: "Actors" }],
 });

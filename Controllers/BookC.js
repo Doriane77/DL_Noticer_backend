@@ -14,7 +14,9 @@ const register = async (req, res) => {
         .status(400)
         .json({ message: "Le titre et le résumer  sont obligatoire" });
     }
-
+    if (adaptation && adaptation.adapt === false) {
+      adaptation.id_movie = null;
+    }
     const book = new Book({
       title: title,
       summary: summary,
@@ -25,7 +27,7 @@ const register = async (req, res) => {
     });
     if (!author) book.author = null;
     // if (!types) book.types = null;
-    // if (!adaptation) book.adaptation.id_name = null;
+    // if (!adaptation) book.adaptation.id_movie = null;
 
     const savedBook = await book.save();
 
@@ -34,7 +36,7 @@ const register = async (req, res) => {
         $push: { books: savedBook._id },
       });
     }
-    if (adaptation && adaptation.idBook) {
+    if (adaptation && adaptation.adapt === true && adaptation.id_movie) {
       await Movies.findByIdAndUpdate(adaptation.idBook, {
         "adaptation.adapt": true,
         "adaptation.idBook": savedBook._id,

@@ -16,7 +16,9 @@ const register = async (req, res) => {
         .status(400)
         .json({ message: "Title, synopsis, et image obligatoire" });
     }
-
+    if (adaptation && adaptation.adapt === false) {
+      adaptation.idBook = null;
+    }
     const movie = new Movie({
       title,
       synopsis,
@@ -41,12 +43,13 @@ const register = async (req, res) => {
         });
       }
     }
-    if (adaptation && adaptation.idBook) {
-      await Books.findByIdAndUpdate(adaptation.id_movie, {
+    if (adaptation && adaptation.adapt === true && adaptation.idBook) {
+      await Books.findByIdAndUpdate(adaptation.idBook, {
         "adaptation.adapt": true,
         "adaptation.id_movie": savedMovie._id,
       });
     }
+
     const populatedMovie = await Movie.findById(savedMovie._id)
       .populate("director")
       .populate("types")

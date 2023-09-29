@@ -10,30 +10,34 @@ const booksSchema = new mongoose.Schema({
   types: [{ type: mongoose.Schema.Types.ObjectId, ref: "Types" }],
   adaptation: {
     adapt: { type: Boolean, default: false },
-    id_movie: { type: mongoose.Schema.Types.ObjectId, ref: "Movies" },
+    id_movie: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Movies",
+      default: null,
+    },
   },
 });
-booksSchema.statics.getAverageRating = function (bookId) {
-  return this.aggregate([
-    { $match: { _id: bookId } },
-    { $unwind: "$reviews" },
-    {
-      $lookup: {
-        from: "reviews",
-        localField: "reviews",
-        foreignField: "_id",
-        as: "reviewData",
-      },
-    },
-    { $unwind: "$reviewData" },
-    {
-      $group: {
-        _id: "$_id",
-        averageRating: { $avg: "$reviewData.rating" },
-      },
-    },
-  ]);
-};
+// booksSchema.statics.getAverageRating = function (bookId) {
+//   return this.aggregate([
+//     { $match: { _id: bookId } },
+//     { $unwind: "$reviews" },
+//     {
+//       $lookup: {
+//         from: "reviews",
+//         localField: "reviews",
+//         foreignField: "_id",
+//         as: "reviewData",
+//       },
+//     },
+//     { $unwind: "$reviewData" },
+//     {
+//       $group: {
+//         _id: "$_id",
+//         averageRating: { $avg: "$reviewData.rating" },
+//       },
+//     },
+//   ]);
+// };
 const Books = mongoose.model("Books", booksSchema);
 
 module.exports = Books;
