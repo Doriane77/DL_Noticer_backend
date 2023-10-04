@@ -74,9 +74,8 @@ const update = async (req, res) => {
 const supp = async (req, res) => {
   try {
     const bookId = req.params.id;
-    const bookToDelete = await Book.findById(bookId);
-
-    if (!deletedBook) {
+    const bookToDelete = await Book.findByIdAndDelete(bookId);
+    if (!bookToDelete) {
       return res.status(404).json({ message: "Livre non trouvé" });
     }
     await Reviews.deleteMany({ book: bookId });
@@ -86,8 +85,7 @@ const supp = async (req, res) => {
         "adaptation.idBook": null,
       });
     }
-    await Authors.updateMany({ author: bookId }, { $pull: { author: bookId } });
-    await bookToDelete.remove();
+    await Authors.updateMany({}, { $pull: { books: bookId } });
     res.status(200).json({ message: "Livre supprimé avec succès" });
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -17,27 +17,7 @@ const booksSchema = new mongoose.Schema({
     },
   },
 });
-// booksSchema.statics.getAverageRating = function (bookId) {
-//   return this.aggregate([
-//     { $match: { _id: bookId } },
-//     { $unwind: "$reviews" },
-//     {
-//       $lookup: {
-//         from: "reviews",
-//         localField: "reviews",
-//         foreignField: "_id",
-//         as: "reviewData",
-//       },
-//     },
-//     { $unwind: "$reviewData" },
-//     {
-//       $group: {
-//         _id: "$_id",
-//         averageRating: { $avg: "$reviewData.rating" },
-//       },
-//     },
-//   ]);
-// };
+
 const Books = mongoose.model("Books", booksSchema);
 
 module.exports = Books;
