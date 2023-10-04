@@ -39,32 +39,52 @@ const update = async (req, res) => {
   try {
     const actorId = req.body.id;
 
+    const previousActor = await Actor.findById(actorId).populate("movies");
+    if (!previousActor) {
+      return res.status(404).json({ message: "Acteur non trouvé" });
+    }
+
     const updatedActor = await Actor.findByIdAndUpdate(actorId, req.body, {
       new: true,
     }).populate("movies");
 
-    if (!updatedActor) {
-      return res.status(404).json({ message: "Acteur non trouvé" });
-    }
-    for (let prevMovieId of previousActor.movies) {
-      if (!req.body.movies.includes(prevMovieId.toString())) {
-        await Movies.findByIdAndUpdate(prevMovieId, {
-          $pull: { actors: actorId },
-        });
+    const isNewMoviesArray = Array.isArray(req.body.movies);
+    const isOldMoviesArray =
+      previousActor.movies && Array.isArray(previousActor.movies);
+
+    const oldMovieIds = isOldMoviesArray
+      ? previousActor.movies.map((movie) => movie._id.toString())
+      : [];
+
+    if (isOldMoviesArray) {
+      for (let prevMovie of previousActor.movies) {
+        if (
+          isNewMoviesArray &&
+          !req.body.movies.includes(prevMovie._id.toString())
+        ) {
+          await Movies.findByIdAndUpdate(prevMovie._id, {
+            $pull: { actors: actorId },
+          });
+        }
       }
     }
-    for (let newMovieId of req.body.movies) {
-      if (!previousActor.movies.includes(newMovieId.toString())) {
-        await Movies.findByIdAndUpdate(newMovieId, {
-          $addToSet: { actors: actorId },
-        });
+
+    if (isNewMoviesArray) {
+      for (let newMovieId of req.body.movies) {
+        if (!oldMovieIds.includes(newMovieId)) {
+          await Movies.findByIdAndUpdate(newMovieId, {
+            $addToSet: { actors: actorId },
+          });
+        }
       }
     }
+
     res.status(200).json(updatedActor);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 const supp = async (req, res) => {
   try {
     const actorId = req.params.id;
