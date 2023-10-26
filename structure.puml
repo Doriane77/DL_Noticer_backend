@@ -1,16 +1,10 @@
 @startuml
 
-entity "Books" {
+entity "Admin" {
   _id : ObjectId
-  title : String
-  summary : String
-  image : String
-  rating : Number
-  + adaptation { adapt : Boolean, id_name : ObjectId (ref Movies) }
-  --
-  * author : ObjectId [0..*] (ref Authors)
-  * reviews : ObjectId [0..*] (ref Reviews)
-  * types : ObjectId [0..*] (ref Types)
+  username : String
+  email : String
+  password : String
 }
 
 entity "Authors" {
@@ -20,7 +14,6 @@ entity "Authors" {
   --
   * books : ObjectId [0..*] (ref Books)
 }
-
 entity "Movies" {
   _id : ObjectId
   title : String
@@ -34,6 +27,20 @@ entity "Movies" {
   * actors : ObjectId [0..*] (ref Actors)
   * types : ObjectId [0..*] (ref Types)
 }
+
+entity "Books" {
+  _id : ObjectId
+  title : String
+  summary : String
+  image : String
+  rating : Number
+  + adaptation { adapt : Boolean, id_name : ObjectId (ref Movies) }
+  --
+  * author : ObjectId [0..*] (ref Authors)
+  * reviews : ObjectId [0..*] (ref Reviews)
+  * types : ObjectId [0..*] (ref Types)
+}
+
 
 entity "Actors" {
   _id : ObjectId
@@ -86,15 +93,22 @@ entity "Users" {
   * notes : ObjectId [0..*] (ref Ratings)
 }
 
+"Admin" --o "Books" : can modify >
+"Admin" --o "Movies" : can modify >
+"Admin" --o "Actors" : can modify >
+"Admin" --o "Directors" : can modify >
+"Admin" --o "Authors" : can modify >
+
 "Books" *--o "Authors" : has > 
-"Books" o--o "Reviews" : has >
-"Books" o-- "Types" : has >
+"Books" o--o "Reviews" : has > [0..*]
+"Books" o-- "Types" : has > 
 "Books" o--o "Movies" : is adapted true 
-"Movies" o--o "Actors" : has >
-"Movies" o--o "Directors" : has >
-"Movies" o--o "Reviews" : has >
-"Movies" o-- "Types" : has >
-"Users" o--o "Reviews" : writes >
-"Users" o--o "Ratings" : gives >
+
+"Movies" o-- "Directors" : has > 1
+"Movies" o--o "Actors" : has > [0..*]
+"Movies" o--o "Reviews" : has > [0..*]
+"Movies" o-- "Types" : has > 
+"Users" o--o "Reviews" : writes > [0..*]
+"Users" o--o "Ratings" : gives > [0..*]
 
 @enduml
