@@ -104,7 +104,7 @@ entity "Users" {
 "Books" o-- "Types" : has > 
 "Books" o--o "Movies" : is adapted true 
 
-"Movies" o-- "Directors" : has > 1
+"Movies" o--o "Directors" : has > 1
 "Movies" o--o "Actors" : has > [0..*]
 "Movies" o--o "Reviews" : has > [0..*]
 "Movies" o-- "Types" : has > 
